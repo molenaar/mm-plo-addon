@@ -19,7 +19,7 @@
         "name": ""
       },
       "skills": [
-        "./mm-plo-orchestrator"
+        "./skills/mm-plo-orchestrator"
       ]
     }
   ]
