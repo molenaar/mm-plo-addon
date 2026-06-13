@@ -1,0 +1,26 @@
+{
+  "name": "mplo",
+  "owner": {
+    "name": ""
+  },
+  "license": "",
+  "homepage": "",
+  "repository": "",
+  "keywords": [
+    "bmad"
+  ],
+  "plugins": [
+    {
+      "name": "mplo",
+      "source": "./",
+      "description": "Deterministic tracker-first sprint orchestration",
+      "version": "1.0.0",
+      "author": {
+        "name": ""
+      },
+      "skills": [
+        "./mm-plo-orchestrator"
+      ]
+    }
+  ]
+}

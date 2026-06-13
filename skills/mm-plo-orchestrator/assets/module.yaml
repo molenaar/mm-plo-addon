@@ -1,0 +1,8 @@
+code: mplo
+name: "MM PLO Orchestrator"
+description: "Deterministic tracker-first sprint orchestration"
+module_version: 1.0.0
+default_selected: false
+module_greeting: >
+  MM PLO Orchestrator is ready.
+  Use it to coordinate tracker-first sprint rounds, lane dispatch, and QA gating.
