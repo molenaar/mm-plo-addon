@@ -12,7 +12,7 @@
   "plugins": [
     {
       "name": "mplo",
-      "source": "./",
+      "source": "./skills",
       "description": "Deterministic tracker-first sprint orchestration",
       "version": "1.0.0",
       "author": {
