@@ -5,11 +5,17 @@ Private BMad addon for tracker-first sprint orchestration.
 ## What’s inside
 
 - `skills/mm-plo-orchestrator/` — reusable workflow skill
-- `skills/.claude-plugin/marketplace.json` — standalone distribution manifest
+- `.claude-plugin/marketplace.json` — standalone distribution manifest at repo root
 
 ## Install
 
-Copy the `skills/mm-plo-orchestrator/` folder into another project, then run it with `setup` or `configure` to register config and help entries.
+Install from this repository with the BMad installer:
+
+```bash
+npx bmad-method install --custom-source https://github.com/molenaar/mm-plo-addon --tools claude-code --yes
+```
+
+Then run `mm-plo-orchestrator` and use `setup` or `configure` to register config and help entries.
 
 ## License
 
