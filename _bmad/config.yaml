@@ -7,3 +7,8 @@ bmb:
   default_selected: false
   bmad_builder_output_folder: '{project-root}/skills'
   bmad_builder_reports: '{project-root}/skills/reports'
+mplo:
+  name: MM PLO Orchestrator
+  description: Deterministic tracker-first sprint orchestration
+  version: 1.1.0
+  default_selected: false

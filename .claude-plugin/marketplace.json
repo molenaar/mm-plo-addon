@@ -14,7 +14,7 @@
       "name": "mplo",
       "source": "./",
       "description": "Deterministic tracker-first sprint orchestration",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": {
         "name": ""
       },

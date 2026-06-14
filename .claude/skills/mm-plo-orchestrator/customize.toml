@@ -1,0 +1,23 @@
+# DO NOT EDIT -- overwritten on every update.
+#
+# Workflow customization surface for mm-plo-orchestrator.
+# Team overrides:     {project-root}/_bmad/custom/mm-plo-orchestrator.toml
+# Personal overrides: {project-root}/_bmad/custom/mm-plo-orchestrator.user.toml
+
+[workflow]
+
+activation_steps_prepend = []
+activation_steps_append = []
+
+persistent_facts = [
+  "file:{project-root}/**/project-context.md",
+  "Tracker-first: treat the sprint tracker as the source of truth for round state, lane selection, and completion.",
+]
+
+on_complete = ""
+
+sprint_tracker_path = "{project-root}/_bmad-output/implementation-artifacts/sprint-status.yaml"
+prompt_catalog_path = "{project-root}/docs/operations"
+lane_map_path = "{project-root}/docs/operations/lane-map.yaml"
+output_dir = "{project-root}/_bmad-output/orchestration"
+output_folder_name = "mm-plo-orchestrator-{project_name}-{date}"
