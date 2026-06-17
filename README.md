@@ -7,6 +7,16 @@ Private BMad addon for tracker-first sprint orchestration.
 - `skills/mm-plo-orchestrator/` — reusable workflow skill
 - `.claude-plugin/marketplace.json` — standalone distribution manifest at repo root
 
+## Recommended: BMAD Viewer for VS Code
+
+The **[BMAD Viewer](https://marketplace.visualstudio.com/items?itemName=rdudiver.bmad-viewer-vscode)** is essential for keeping the human in the loop while the orchestrator runs.
+
+- **Kanban dashboard** — reads directly from `sprint-status.yaml` so you see story status updates in real time as Amelia advances lanes
+- **Round summaries** — search and browse all `.md` files in `_bmad-output` rendered as HTML, including every `round-summary.md` the orchestrator produces
+- **Human gate** — review the kanban after John populates epics and before handing off to Amelia; if the board looks wrong, fix it before setting a `/goal`
+
+Install it from the VS Code marketplace before running your first sprint.
+
 ## Install
 
 Install from this repository with the BMad installer:
