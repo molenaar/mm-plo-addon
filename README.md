@@ -17,6 +17,37 @@ The **[BMAD Viewer](https://marketplace.visualstudio.com/items?itemName=rdudiver
 
 Install it from the VS Code marketplace before running your first sprint.
 
+## Suggested Sprint Setup: Two Terminals + Viewer
+
+Set and forget. Open two Claude Code terminals and the BMAD Viewer, then step back and watch.
+
+**Terminal 1 — Amelia executes the sprint**
+
+After John finishes planning and you've reviewed the kanban:
+
+```
+/goal ROUND closure line shows done: X/X and retros: X/X with churn: none
+/mm-plo-orchestrator --headless
+```
+
+Amelia runs parallel rounds — dev, review, QA, and retrospective lanes — until all stories and epics are done. Each round ends with a closure line you and the `/goal` evaluator can both read.
+
+**Terminal 2 — John monitors progress**
+
+```
+/loop 20m /bmad-sprint-status
+```
+
+John wakes up every 20 minutes, reads the tracker, and gives a PM-level status report. He flags risks, blockers, and whether the sprint is on track — a richer check than the goal evaluator alone.
+
+**You — watch and unblock**
+
+- **BMAD Viewer**: kanban updates as stories advance, round summaries available in the search panel
+- **Terminal 1**: closure lines show round-by-round progress; `churn: detected` or `churn: rate-limit` means action needed
+- **Terminal 2**: John's 20-minute reports surface anything the automation missed
+
+Your only job mid-sprint is to unblock what neither Amelia nor John can resolve alone.
+
 ## Install
 
 Install from this repository with the BMad installer:
