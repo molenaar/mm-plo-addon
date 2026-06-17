@@ -40,6 +40,31 @@ Amelia runs parallel rounds — dev, review, QA, and retrospective lanes — unt
 
 John wakes up every 20 minutes, reads the tracker, and gives a PM-level status report. He flags risks, blockers, and whether the sprint is on track — a richer check than the goal evaluator alone.
 
+**Advanced: John as the goal evaluator (recommended)**
+
+By default `/goal` uses a small fast model (Haiku) to check the closure line — mechanical pattern matching. For a richer check, wire John as a custom [prompt-based Stop hook](https://code.claude.com/docs/en/hooks-guide#prompt-based-hooks) in your project's `.claude/settings.json`. John evaluates whether acceptance criteria are *genuinely* met, not just technically passing — because he wrote them.
+
+```json
+{
+  "hooks": {
+    "Stop": [{
+      "hooks": [{
+        "type": "prompt",
+        "prompt": "<paste workflow.goal_evaluator_prompt from customize.toml>"
+      }]
+    }]
+  }
+}
+```
+
+With this in place, drop `/goal` from Terminal 1 and just run:
+
+```
+/mm-plo-orchestrator --headless
+```
+
+John wakes up after every round automatically, applies PM-level judgment, and keeps Amelia running until he is satisfied.
+
 **You — watch and unblock**
 
 - **BMAD Viewer**: kanban updates as stories advance, round summaries available in the search panel
