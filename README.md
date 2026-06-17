@@ -7,6 +7,72 @@ Private BMad addon for tracker-first sprint orchestration.
 - `skills/mm-plo-orchestrator/` — reusable workflow skill
 - `.claude-plugin/marketplace.json` — standalone distribution manifest at repo root
 
+## Recommended: BMAD Viewer for VS Code
+
+The **[BMAD Viewer](https://marketplace.visualstudio.com/items?itemName=rdudiver.bmad-viewer-vscode)** is essential for keeping the human in the loop while the orchestrator runs.
+
+- **Kanban dashboard** — reads directly from `sprint-status.yaml` so you see story status updates in real time as Amelia advances lanes
+- **Round summaries** — search and browse all `.md` files in `_bmad-output` rendered as HTML, including every `round-summary.md` the orchestrator produces
+- **Human gate** — review the kanban after John populates epics and before handing off to Amelia; if the board looks wrong, fix it before setting a `/goal`
+
+Install it from the VS Code marketplace before running your first sprint.
+
+## Suggested Sprint Setup: Two Terminals + Viewer
+
+Set and forget. Open two Claude Code terminals and the BMAD Viewer, then step back and watch.
+
+**Terminal 1 — Amelia executes the sprint**
+
+After John finishes planning and you've reviewed the kanban:
+
+```
+/goal ROUND closure line shows done: X/X and retros: X/X with churn: none
+/mm-plo-orchestrator --headless
+```
+
+Amelia runs parallel rounds — dev, review, QA, and retrospective lanes — until all stories and epics are done. Each round ends with a closure line you and the `/goal` evaluator can both read.
+
+**Terminal 2 — John monitors progress**
+
+```
+/loop 20m /bmad-sprint-status
+```
+
+John wakes up every 20 minutes, reads the tracker, and gives a PM-level status report. He flags risks, blockers, and whether the sprint is on track — a richer check than the goal evaluator alone.
+
+**Advanced: John as the goal evaluator (recommended)**
+
+By default `/goal` uses a small fast model (Haiku) to check the closure line — mechanical pattern matching. For a richer check, wire John as a custom [prompt-based Stop hook](https://code.claude.com/docs/en/hooks-guide#prompt-based-hooks) in your project's `.claude/settings.json`. John evaluates whether acceptance criteria are *genuinely* met, not just technically passing — because he wrote them.
+
+```json
+{
+  "hooks": {
+    "Stop": [{
+      "hooks": [{
+        "type": "prompt",
+        "prompt": "<paste workflow.goal_evaluator_prompt from customize.toml>"
+      }]
+    }]
+  }
+}
+```
+
+With this in place, drop `/goal` from Terminal 1 and just run:
+
+```
+/mm-plo-orchestrator --headless
+```
+
+John wakes up after every round automatically, applies PM-level judgment, and keeps Amelia running until he is satisfied.
+
+**You — watch and unblock**
+
+- **BMAD Viewer**: kanban updates as stories advance, round summaries available in the search panel
+- **Terminal 1**: closure lines show round-by-round progress; `churn: detected` or `churn: rate-limit` means action needed
+- **Terminal 2**: John's 20-minute reports surface anything the automation missed
+
+Your only job mid-sprint is to unblock what neither Amelia nor John can resolve alone.
+
 ## Install
 
 Install from this repository with the BMad installer:

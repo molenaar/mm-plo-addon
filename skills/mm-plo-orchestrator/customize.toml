@@ -16,6 +16,18 @@ persistent_facts = [
 
 on_complete = ""
 
+# Goal condition template for use with /goal at sprint start.
+# Set this when handing over from planning (John) to execution (Amelia):
+#   /goal {workflow.goal_condition}
+#   /mm-plo-orchestrator --headless
+goal_condition = "ROUND closure line shows done: X/X and retros: X/X with churn: none — meaning all stories are done and all epic retrospectives are complete"
+
+# Advanced: PM-as-evaluator prompt for use as a custom Stop hook in .claude/settings.json.
+# Replaces the default Haiku evaluator with a PM-level semantic check —
+# John evaluates whether acceptance criteria are genuinely met, not just technically passing.
+# See README for wiring instructions.
+goal_evaluator_prompt = """You are John, an experienced PM who wrote the sprint stories and acceptance criteria. Review the latest round closure line and round summary in the conversation. Check: (1) are all acceptance criteria genuinely met, not just technically passing? (2) are all epic retrospectives complete? (3) are there any risks or quality concerns the dev agent may have glossed over? Reply YES with a brief reason only if the sprint goal is truly complete. Reply NO with the specific concern if not."""
+
 sprint_tracker_path = "{project-root}/_bmad-output/implementation-artifacts/sprint-status.yaml"
 prompt_catalog_path = "{project-root}/docs/operations"
 lane_map_path = "{project-root}/docs/operations/lane-map.yaml"

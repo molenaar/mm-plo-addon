@@ -58,6 +58,8 @@ Use `bmad-sprint-status` in `mode=data` as the canonical pulse for counts, risks
 
 Derive the active lanes from the tracker, lane map, and prompt catalog. Preserve deterministic ordering: active lanes first, then review lanes, then ready lanes, then backlog only when the lane map explicitly allows a fresh dispatch. If nothing is active, write a blocked round summary and stop.
 
+After resolving implementation and review lanes, check each epic: if all stories under that epic have status `done` in `development_status` and the epic's retrospective entry is `optional` (not yet `done`), add a retrospective lane for that epic. Retrospective lanes dispatch after all other lanes in the same round.
+
 ### 3. Dispatch
 
 Build one dispatch bundle per lane with the lane objective, required inputs, dependencies, stop conditions, and the BMAD skill to invoke. Use these upstream skills as authoritative dependencies:
@@ -65,6 +67,7 @@ Build one dispatch bundle per lane with the lane objective, required inputs, dep
 - `bmad-agent-dev` for implementation lanes
 - `bmad-code-review` for review lanes
 - `bmad-qa-generate-e2e-tests` for test lanes
+- `bmad-retrospective` for retrospective lanes (pass: epic name, completed story list, round summaries for that epic)
 - `bmad-sprint-status` when the tracker needs to be refreshed
 
 Dispatch independent lanes in parallel when dependencies allow. Do not copy core lane logic into this skill; orchestrate it.
@@ -77,9 +80,19 @@ Collect all returns, compare them to the lane contract, and decide whether the r
 
 Write `round-summary.md`, `lane-bundles.md`, `dispatch-block.md`, `closure-notes.md`, and `tracker-state.yaml` into the workspace. Update the tracker only after the gate passes. Keep `references/.decision-log.md` current so the round can resume cleanly later.
 
+**Status write-back:** For each lane that passed the QA gate, write `done` to the corresponding story key in `development_status` in the tracker. For completed retrospective lanes, write `done` to the `epic-N-retrospective` key. When all stories under an epic are `done` and its retrospective is `done`, write `done` to the epic key itself.
+
+**Conversation-visible closure line:** Emit this line as the final output of every round so the goal evaluator can read it:
+
+```
+ROUND {N} | done: {X}/{total} | in-progress: {A} | review: {B} | retros: {C}/{epics} | churn: none|detected|rate-limit
+```
+
+Use `churn: rate-limit` when a round was interrupted by an API rate limit rather than a logic stall. This distinguishes a temporary pause from a genuine blocker.
+
 ## Headless Mode
 
-When `--headless` is set, skip interactive prompting and return structured JSON with `status`, `round`, `active_lanes`, `workspace`, `outputs`, and `blocked_reason` when applicable.
+When `--headless` is set, skip interactive prompting and return structured JSON with `status`, `round`, `active_lanes`, `stories_done`, `stories_total`, `retros_done`, `retros_total`, `churn`, `workspace`, `outputs`, and `blocked_reason` when applicable.
 
 ## Constraints
 
