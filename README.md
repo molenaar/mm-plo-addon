@@ -48,6 +48,7 @@ By default `/goal` uses a small fast model (Haiku) to check the closure line —
 {
   "hooks": {
     "Stop": [{
+      "matcher": "^ROUND \\d+ \\|",
       "hooks": [{
         "type": "prompt",
         "prompt": "<paste workflow.goal_evaluator_prompt from customize.toml>"
@@ -56,6 +57,8 @@ By default `/goal` uses a small fast model (Haiku) to check the closure line —
   }
 }
 ```
+
+The `matcher` is critical. `^ROUND \\d+ \\|` matches only the standardized closure line emitted by Stage 5 (`ROUND 3 | done: 4/6 | ...`). Without it the hook fires on every response in every session — including John's PM sessions and any session that reads a round-summary.md file — creating an unintended loop.
 
 With this in place, drop `/goal` from Terminal 1 and just run:
 
