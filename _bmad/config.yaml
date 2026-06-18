@@ -10,5 +10,5 @@ bmb:
 mplo:
   name: MM PLO Orchestrator
   description: Deterministic tracker-first sprint orchestration
-  version: 1.1.0
+  version: 1.2.0
   default_selected: false
