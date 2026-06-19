@@ -1,0 +1,31 @@
+{
+  "cases": [
+    {
+      "id": "baseline-1",
+      "name": "Detect prototype signal when new interactive component lacks dossier",
+      "description": "A diff introduces a complex interactive map component without prior design dossier, no EXPERIENCE.md reference, and no established pattern. Freya should fire the prototype trigger signal (Signal 6) as the highest-priority finding.",
+      "mode": "baseline",
+      "input": {
+        "diff_range": "HEAD~3..HEAD",
+        "scan_json": {
+          "no_changes": false,
+          "changed_files": ["src/components/InteractiveMap.astro", "src/pages/atlas.astro"],
+          "hex_drift": [],
+          "missing_reference": [],
+          "new_pages": ["src/pages/atlas.astro"]
+        },
+        "design_doc": "# DESIGN.md\n\n## Token Taxonomy\nbg-primary: #3b82f6\ntext-secondary: #6b7280\n\n## Themes\nLight theme uses bg-primary and text-secondary.",
+        "experience_doc": "# EXPERIENCE.md\n\n## Chapter 1: The House\nThe main navigation paths are Home, Gallery, Settings.\n\n## Alex's Journey\nAlex explores Gallery, clicks Explore, lands on browse view.",
+        "component_dossiers": []
+      },
+      "expected_findings": [
+        {
+          "signal": 6,
+          "present": true,
+          "description": "Freya should detect InteractiveMap as a prototype candidate and recommend Sally dossier + human review"
+        }
+      ],
+      "expected_tone": "The finding should be precise and actionable, citing the component name and recommending next steps without editorializing."
+    }
+  ]
+}
