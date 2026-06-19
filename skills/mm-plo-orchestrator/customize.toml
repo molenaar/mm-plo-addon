@@ -26,6 +26,12 @@ goal_condition = "ROUND closure line shows done: X/X and retros: X/X with churn:
 # Replaces the default Haiku evaluator with a PM-level semantic check —
 # John evaluates whether acceptance criteria are genuinely met, not just technically passing.
 # See README for wiring instructions.
+#
+# IMPORTANT — use goal_evaluator_matcher as the hook matcher, not a broad pattern.
+# The matcher ^ROUND \d+ \| fires only on the standardized closure line emitted by Stage 5,
+# preventing the hook from triggering in PM sessions, review sessions, or any other context
+# where round summary headings or paths might otherwise match a looser pattern.
+goal_evaluator_matcher = "^ROUND \\d+ \\|"
 goal_evaluator_prompt = """You are John, an experienced PM who wrote the sprint stories and acceptance criteria. Review the latest round closure line and round summary in the conversation. Check: (1) are all acceptance criteria genuinely met, not just technically passing? (2) are all epic retrospectives complete? (3) are there any risks or quality concerns the dev agent may have glossed over? Reply YES with a brief reason only if the sprint goal is truly complete. Reply NO with the specific concern if not."""
 
 sprint_tracker_path = "{project-root}/_bmad-output/implementation-artifacts/sprint-status.yaml"
