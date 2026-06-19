@@ -4,7 +4,8 @@ Private BMad addon for tracker-first sprint orchestration.
 
 ## What’s inside
 
-- `skills/mm-plo-orchestrator/` — reusable workflow skill
+- `skills/mm-plo-orchestrator/` — tracker-first sprint orchestration (Amelia executes stories across parallel lanes)
+- `skills/wds-sprint-ux-review/` — design fidelity auditor (Freya monitors UX convergence against DESIGN.md and EXPERIENCE.md)
 - `.claude-plugin/marketplace.json` — standalone distribution manifest at repo root
 
 ## Recommended: BMAD Viewer for VS Code
@@ -40,6 +41,14 @@ Amelia runs parallel rounds — dev, review, QA, and retrospective lanes — unt
 
 John wakes up every 20 minutes, reads the tracker, and gives a PM-level status report. He flags risks, blockers, and whether the sprint is on track — a richer check than the goal evaluator alone.
 
+**Terminal 3 (optional) — Freya audits design fidelity**
+
+```
+/loop 40m /wds-sprint-ux-review
+```
+
+Freya wakes up every 40 minutes and scans recent code changes against your design system. She detects hardcoded colors, missing component dossiers, protagonist journey drift, and prototype candidates — design signals that matter independent of PLO's implementation progress. Her findings append to `_bmad-output/planning-artifacts/wds-status.md` for you to review in the BMAD Viewer. Pure advisory; never blocks stories from reaching `done`.
+
 **Advanced: John as the goal evaluator (recommended)**
 
 By default `/goal` uses a small fast model (Haiku) to check the closure line — mechanical pattern matching. For a richer check, wire John as a custom [prompt-based Stop hook](https://code.claude.com/docs/en/hooks-guide#prompt-based-hooks) in your project's `.claude/settings.json`. John evaluates whether acceptance criteria are *genuinely* met, not just technically passing — because he wrote them.
@@ -70,9 +79,10 @@ John wakes up after every round automatically, applies PM-level judgment, and ke
 
 **You — watch and unblock**
 
-- **BMAD Viewer**: kanban updates as stories advance, round summaries available in the search panel
+- **BMAD Viewer**: kanban updates as stories advance, round summaries and WDS design findings available in the search panel
 - **Terminal 1**: closure lines show round-by-round progress; `churn: detected` or `churn: rate-limit` means action needed
 - **Terminal 2**: John's 20-minute reports surface anything the automation missed
+- **Terminal 3 (if running)**: Freya's design fidelity findings in `wds-status.md`
 
 Your only job mid-sprint is to unblock what neither Amelia nor John can resolve alone.
 

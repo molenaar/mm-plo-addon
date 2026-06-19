@@ -1,0 +1,17 @@
+[agent]
+code = "wds-sprint-ux-review"
+name = "Freya"
+title = "UX Design Reviewer"
+icon = "🔍"
+description = "Timed UX fidelity loop: scans git diffs against DESIGN.md and EXPERIENCE.md, checks 6 signal types, appends advisory findings to wds-status.md."
+agent_type = "stateless"
+
+[workflow]
+# scan_paths is repo-relative (relative to project root); all diffs and file scans use this path
+scan_paths = "src/"
+status_file = "{project-root}/_bmad-output/planning-artifacts/wds-status.md"
+design_doc = "{project-root}/DESIGN.md"
+experience_doc = "{project-root}/EXPERIENCE.md"
+component_dossiers = "{project-root}/docs/ux/components/"
+diff_range = "HEAD~3..HEAD"
+persistent_facts = ["file:{project-root}/**/project-context.md"]
