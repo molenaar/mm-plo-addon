@@ -5,7 +5,7 @@ Private BMad addon for tracker-first sprint orchestration.
 ## What’s inside
 
 - `skills/mm-plo-orchestrator/` — tracker-first sprint orchestration (Amelia executes stories across parallel lanes)
-- `skills/wds-sprint-ux-review/` — design fidelity auditor (Freya monitors UX convergence against DESIGN.md and EXPERIENCE.md)
+- `skills/mm-ux-orchestrator/` — UX orchestration loop (Freya delegates to Sally via `bmad-agent-ux-designer`; WDS deterministic scan activates automatically when DESIGN.md is present)
 - `.claude-plugin/marketplace.json` — standalone distribution manifest at repo root
 
 ## Recommended: BMAD Viewer for VS Code
@@ -41,13 +41,15 @@ Amelia runs parallel rounds — dev, review, QA, and retrospective lanes — unt
 
 John wakes up every 20 minutes, reads the tracker, and gives a PM-level status report. He flags risks, blockers, and whether the sprint is on track — a richer check than the goal evaluator alone.
 
-**Terminal 3 (optional) — Freya audits design fidelity**
+**Terminal 3 (optional) — Freya orchestrates UX review**
+
+Requires `bmad-agent-ux-designer` (Sally) installed.
 
 ```
-/loop 40m /wds-sprint-ux-review
+/loop 40m /mm-ux-orchestrator
 ```
 
-Freya wakes up every 40 minutes and scans recent code changes against your design system. She detects hardcoded colors, missing component dossiers, protagonist journey drift, and prototype candidates — design signals that matter independent of PLO's implementation progress. Her findings append to `_bmad-output/planning-artifacts/wds-status.md` for you to review in the BMAD Viewer. Pure advisory; never blocks stories from reaching `done`.
+Freya wakes up every 40 minutes and delegates to Sally for design judgment (House integration, missing dossiers, protagonist journey drift, prototype candidates). On WDS projects (DESIGN.md present), she also runs a deterministic scan first (hex drift, missing `@reference`, new pages) and passes the results to Sally. Findings append to `_bmad-output/planning-artifacts/ux-status.md` for review in BMAD Viewer. Pure advisory; never blocks stories from reaching `done`.
 
 **Advanced: John as the goal evaluator — deferred until further notice**
 
@@ -89,7 +91,7 @@ John wakes up after every round automatically, applies PM-level judgment, and ke
 - **BMAD Viewer**: kanban updates as stories advance, round summaries and WDS design findings available in the search panel
 - **Terminal 1**: closure lines show round-by-round progress; `churn: detected` or `churn: rate-limit` means action needed
 - **Terminal 2**: John's 20-minute reports surface anything the automation missed
-- **Terminal 3 (if running)**: Freya's design fidelity findings in `wds-status.md`
+- **Terminal 3 (if running)**: Freya's design fidelity findings in `ux-status.md`
 
 Your only job mid-sprint is to unblock what neither Amelia nor John can resolve alone.
 

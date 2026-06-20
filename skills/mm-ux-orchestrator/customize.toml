@@ -1,15 +1,15 @@
 [agent]
-code = "wds-sprint-ux-review"
+code = "mm-ux-orchestrator"
 name = "Freya"
-title = "UX Design Reviewer"
+title = "UX Orchestrator"
 icon = "🔍"
-description = "Timed UX fidelity loop: scans git diffs against DESIGN.md and EXPERIENCE.md, checks 6 signal types, appends advisory findings to wds-status.md."
+description = "Timed UX orchestration loop: Freya delegates to Sally (bmad-agent-ux-designer) for design judgment; WDS deterministic scan (hex drift, @reference, new pages) runs automatically when DESIGN.md is present."
 agent_type = "stateless"
 
 [workflow]
 # scan_paths is repo-relative (relative to project root); all diffs and file scans use this path
 scan_paths = "src/"
-status_file = "{project-root}/_bmad-output/planning-artifacts/wds-status.md"
+status_file = "{project-root}/_bmad-output/planning-artifacts/ux-status.md"
 design_doc = "{project-root}/DESIGN.md"
 experience_doc = "{project-root}/EXPERIENCE.md"
 component_dossiers = "{project-root}/docs/ux/components/"

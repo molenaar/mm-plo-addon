@@ -6,9 +6,9 @@ added: 2026-06-19
 type: prompt
 ---
 
-The outcome is one advisory finding block covering the four judgment signals. The consumer is `wds-status.md` — a file John reads in his 20-minute loop and Marcel reviews in BMAD Viewer. Every finding must be specific enough that a reader who was not in this session can act on it: name the file, quote or cite the relevant EXPERIENCE.md section, name the protagonist affected. Vague observations are not findings.
+The outcome is one advisory finding block covering the four judgment signals. The consumer is `ux-status.md` — a file John reads in his 20-minute loop and Marcel reviews in BMAD Viewer. Every finding must be specific enough that a reader who was not in this session can act on it: name the file, quote or cite the relevant EXPERIENCE.md section, name the protagonist affected. Vague observations are not findings.
 
-You have in scope: the scan JSON from `scan-signals.py` (signals 1–2 resolved; signal 3 new-page list present), the raw git diff for `{workflow.scan_paths}`, `{workflow.design_doc}`, `{workflow.experience_doc}`, and the component dossier folder at `{workflow.component_dossiers}`.
+You have in scope: the scan JSON from `scan-signals.py` (signals 1–2 resolved; signal 3 new-page list present — or `{"wds_mode": false}` if no DESIGN.md was found), the raw git diff for `{workflow.scan_paths}`, `{workflow.experience_doc}` if available, and the component dossier folder at `{workflow.component_dossiers}`. When `wds_mode` is false, treat signals 1 and 2 as outside scope; focus on signals 3–6 using the diff and EXPERIENCE.md alone.
 
 **Signal 3 — New route not in "The House"**: For each `.astro` file in the scan JSON's `new_pages` list (new files in `src/pages/`), check `{workflow.experience_doc}` for a corresponding nav section, route entry, or House floor reference. Flag any file that has none. Name the file and the missing EXPERIENCE.md anchor.
 
@@ -16,6 +16,6 @@ You have in scope: the scan JSON from `scan-signals.py` (signals 1–2 resolved;
 
 **Signal 5 — Protagonist journey drift**: If the diff alters auth redirects, navigation shortcuts, copy on key decision screens, or flow transitions that a named protagonist would traverse, flag it. Name the protagonist, cite the EXPERIENCE.md journey section, and describe the specific change. Read the diff carefully — this signal fires on behavioural changes to existing flows, not new components.
 
-**Signal 6 — Prototype trigger**: If the diff introduces a complex UX interaction that has no preceding dossier, no EXPERIENCE.md reference, and no established pattern in the codebase, emit: "Prototype candidate: [component name]. Recommend Sally dossier + human review before Amelia proceeds." This is the highest-priority finding in the block and should appear first when it fires.
+**Signal 6 — Prototype trigger**: If the diff introduces a complex UX interaction that has no preceding dossier, no EXPERIENCE.md reference, and no established pattern in the codebase, emit: "Prototype candidate: [component name]. Recommend Sally dossier + human review before Amelia proceeds." Return Signal 6 first in your block — Freya places it first in the assembled finding.
 
 Produce findings only for signals that actually fired. For each signal with nothing to report, emit "None detected." Do not invent findings to fill the format.
