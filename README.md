@@ -49,7 +49,12 @@ John wakes up every 20 minutes, reads the tracker, and gives a PM-level status r
 
 Freya wakes up every 40 minutes and scans recent code changes against your design system. She detects hardcoded colors, missing component dossiers, protagonist journey drift, and prototype candidates — design signals that matter independent of PLO's implementation progress. Her findings append to `_bmad-output/planning-artifacts/wds-status.md` for you to review in the BMAD Viewer. Pure advisory; never blocks stories from reaching `done`.
 
-**Advanced: John as the goal evaluator (recommended)**
+**Advanced: John as the goal evaluator — deferred until further notice**
+
+> **This feature is currently not working and has been deferred.** The prompt-based Stop hook causes an endless loop in John's PM terminal — the hook fires inside John's own session, which never terminates cleanly. No solution exists for this yet. The section below is kept for reference only; do not configure this in active projects.
+
+<details>
+<summary>Reference (not for use)</summary>
 
 By default `/goal` uses a small fast model (Haiku) to check the closure line — mechanical pattern matching. For a richer check, wire John as a custom [prompt-based Stop hook](https://code.claude.com/docs/en/hooks-guide#prompt-based-hooks) in your project's `.claude/settings.json`. John evaluates whether acceptance criteria are *genuinely* met, not just technically passing — because he wrote them.
 
@@ -76,6 +81,8 @@ With this in place, drop `/goal` from Terminal 1 and just run:
 ```
 
 John wakes up after every round automatically, applies PM-level judgment, and keeps Amelia running until he is satisfied.
+
+</details>
 
 **You — watch and unblock**
 
