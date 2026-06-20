@@ -103,13 +103,23 @@ npx bmad-method install --custom-source https://github.com/molenaar/mm-plo-addon
 
 Then run `mm-plo-orchestrator` and use `setup` or `configure` to register config and help entries.
 
+## Update
+
+If you already have a previous version of this addon installed in a project, run the same command with `--action update`:
+
+```bash
+npx bmad-method install --custom-source https://github.com/molenaar/mm-plo-addon --tools claude-code --yes --action update
+```
+
 ## Development
 
-This repo's local `_bmad` install and `.claude/skills` toolchain track [BMad Builder](https://github.com/bmad-code-org/bmad-builder) for building and validating `mm-plo-orchestrator`. To refresh the toolchain to the latest BMad Builder release alongside this addon's own skills:
+This section is only relevant if you are modifying or building this addon itself — not for regular use. The addon is built and validated using [BMad Builder](https://github.com/bmad-code-org/bmad-builder), which provides the build toolchain for this repo. To keep both BMad Builder and the addon's own skills in sync inside this repo:
 
 ```bash
 npx bmad-method install --custom-source https://github.com/bmad-code-org/bmad-builder,https://github.com/molenaar/mm-plo-addon --tools claude-code --yes --action update
 ```
+
+The difference from the Update command above is the additional `https://github.com/bmad-code-org/bmad-builder` source — that pulls in the builder tools needed to work on the addon. You do not need this when using the addon in a project.
 
 ## License
 
