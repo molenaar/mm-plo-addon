@@ -1,12 +1,40 @@
 # mm-plo-addon
 
-Private BMad addon for tracker-first sprint orchestration.
+A [BMad Method](https://github.com/bmad-code-org/BMAD-METHOD) addon, built with [BMad Builder](https://bmad-builder-docs.bmad-method.org/), that adds tracker-first parallel sprint orchestration to a BMad project.
+
+**What it gives you:** two skills. `mm-plo-orchestrator` reads your `sprint-status.yaml` tracker and dispatches dev, review, QA, and retrospective lanes in parallel — stories advance independently instead of one at a time. `mm-ux-orchestrator` runs alongside it as an advisory UX fidelity loop, delegating to Sally (`bmad-agent-ux-designer`) with an optional deterministic scan when a WDS design system is present.
+
+**Why use it:** once John has planned epics and stories, this turns execution from "wait for story 1 to finish before starting story 2" into several stories moving through dev → review → QA at once, with John — and optionally a UX reviewer — watching progress in their own loops.
 
 ## What’s inside
 
 - `skills/mm-plo-orchestrator/` — tracker-first sprint orchestration (Amelia executes stories across parallel lanes)
 - `skills/mm-ux-orchestrator/` — UX orchestration loop (Freya delegates to Sally via `bmad-agent-ux-designer`; WDS deterministic scan activates automatically when DESIGN.md is present)
 - `.claude-plugin/marketplace.json` — standalone distribution manifest at repo root
+
+## Lanes run in parallel, not sequentially
+
+`mm-plo-orchestrator` doesn't work through stories one at a time. Each round, it reads `docs/operations/lane-map.yaml` alongside `sprint-status.yaml` to see which stories can start *now* versus which are waiting on one specific dependency. A populated lane map looks something like this:
+
+```yaml
+lanes:
+  - id: 1-1-user-authentication
+    depends_on: []
+  - id: 1-2-account-management
+    depends_on: []
+  - id: 1-3-password-reset
+    depends_on: ["1-1-user-authentication"]
+  - id: 1-4-session-persistence
+    depends_on: ["1-1-user-authentication"]
+```
+
+`1-1` and `1-2` start immediately — neither depends on anything. `1-3` and `1-4` only wait on `1-1`, specifically — not on `1-2`, and not on each other. The moment `1-1` clears review, both can start, independently, in the same round. Dependencies gate individual stories, not the round as a whole — that's the entire model.
+
+(This repo's own `docs/operations/lane-map.yaml` ships empty — it's a template. A real project populates it once epics and stories exist.)
+
+## Tutorial
+
+New to this addon? [docs/tutorial.md](docs/tutorial.md) walks through installing it and running a full sprint round — three terminals, scoping a round with John, and why stories advance in parallel rather than one at a time.
 
 ## Recommended: BMAD Viewer for VS Code
 
