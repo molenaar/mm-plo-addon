@@ -26,9 +26,11 @@ Story status moves through: `backlog` → `ready-for-dev` → `in-progress` → 
 
 | Terminal | Role | Command |
 |---|---|---|
-| 1 | Implementation — dispatches dev, review, QA, and retro lanes | see step 5 |
-| 2 | John — PM-level status checks | `/loop 20m /bmad-sprint-status` |
-| 3 (optional) | Freya — UX fidelity watch, requires `bmad-agent-ux-designer` installed | `/loop 40m /mm-ux-orchestrator` |
+| 1 | Amelia (`bmad-agent-dev`) — dispatches dev, review, QA, and retro lanes | `/bmad-agent-dev`, then see step 5 |
+| 2 | John (`bmad-agent-pm`) — PM-level status checks | `/bmad-agent-pm`, then `/loop 20m /bmad-sprint-status` |
+| 3 (optional) | Sally (`bmad-agent-ux-designer`) — UX fidelity watch, requires `bmad-agent-ux-designer` installed | `/bmad-agent-ux-designer`, then `/loop 40m /mm-ux-orchestrator` |
+
+Each terminal starts by loading its persona, then runs its loop or orchestrator command in that persona's context.
 
 Terminal 3 is genuinely optional and orthogonal — its findings are advisory only and never block a round from closing. Freya always delegates final judgment to Sally; she only adds a deterministic scan (hex drift, missing `@reference`, new pages) on top when `DESIGN.md` is present. Findings land in `_bmad-output/planning-artifacts/ux-status.md`, which both John and you can read.
 

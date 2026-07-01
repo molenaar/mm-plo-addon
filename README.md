@@ -55,6 +55,7 @@ Set and forget. Open two Claude Code terminals and the BMAD Viewer, then step ba
 After John finishes planning and you've reviewed the kanban:
 
 ```
+/bmad-agent-dev
 /goal ROUND closure line shows done: X/X and retros: X/X with churn: none
 /mm-plo-orchestrator --headless
 ```
@@ -64,6 +65,7 @@ Amelia runs parallel rounds — dev, review, QA, and retrospective lanes — unt
 **Terminal 2 — John monitors progress**
 
 ```
+/bmad-agent-pm
 /loop 20m /bmad-sprint-status
 ```
 
@@ -74,6 +76,7 @@ John wakes up every 20 minutes, reads the tracker, and gives a PM-level status r
 Requires `bmad-agent-ux-designer` (Sally) installed.
 
 ```
+/bmad-agent-ux-designer
 /loop 40m /mm-ux-orchestrator
 ```
 
