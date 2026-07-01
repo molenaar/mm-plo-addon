@@ -2,7 +2,6 @@
 name: design-fidelity-review
 description: Freya's judgment review for signals 3-6 against DESIGN.md and EXPERIENCE.md
 code: DR
-added: 2026-06-19
 type: prompt
 ---
 
