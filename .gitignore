@@ -13,5 +13,7 @@ _bmad-output/
 __pycache__/
 *.pyc
 
-# BMad Builder scan/analysis artifacts
+# BMad Builder scan/analysis artifacts and process logs
 **/.analysis/
+**/.memlog.md
+**/.decision-log.md

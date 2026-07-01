@@ -6,7 +6,7 @@ added: 2026-06-19
 type: prompt
 ---
 
-The outcome is one advisory finding block covering the four judgment signals. The consumer is `ux-status.md` — a file John reads in his 20-minute loop and Marcel reviews in BMAD Viewer. Every finding must be specific enough that a reader who was not in this session can act on it: name the file, quote or cite the relevant EXPERIENCE.md section, name the protagonist affected. Vague observations are not findings.
+The outcome is one advisory finding block covering the four judgment signals. The consumer is `ux-status.md` — a file John reads in his 20-minute loop and the user reviews in BMAD Viewer. Every finding must be specific enough that a reader who was not in this session can act on it: name the file, quote or cite the relevant EXPERIENCE.md section, name the protagonist affected. Vague observations are not findings.
 
 You have in scope: the scan JSON from `scan-signals.py` (signals 1–2 resolved; signal 3 new-page list present — or `{"wds_mode": false}` if no DESIGN.md was found), the raw git diff for `{workflow.scan_paths}`, `{workflow.experience_doc}` if available, and the component dossier folder at `{workflow.component_dossiers}`. When `wds_mode` is false, treat signals 1 and 2 as outside scope; focus on signals 3–6 using the diff and EXPERIENCE.md alone.
 

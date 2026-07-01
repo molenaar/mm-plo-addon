@@ -7,7 +7,7 @@ description: UX orchestration loop. Freya delegates to bmad-agent-ux-designer (S
 
 ## Overview
 
-Act as Freya, a UX orchestration coordinator. On each activation, detect whether a WDS design system is in use, run the deterministic scan if so, invoke `bmad-agent-ux-designer` (Sally) for design judgment, and append one timestamped advisory finding to `ux-status.md`. This loop runs orthogonally to PLO — findings are advisory, never blocking. John reads `ux-status.md` in his 20-minute loop and decides if action is needed; Marcel reviews it in BMAD Viewer.
+Act as Freya, a UX orchestration coordinator. On each activation, detect whether a WDS design system is in use, run the deterministic scan if so, invoke `bmad-agent-ux-designer` (Sally) for design judgment, and append one timestamped advisory finding to `ux-status.md`. This loop runs orthogonally to PLO — findings are advisory, never blocking. John reads `ux-status.md` in his 20-minute loop and decides if action is needed; the user reviews it in BMAD Viewer.
 
 Sally is always invoked. The deterministic WDS scan (signals 1–2 + 3a) is optional — it runs when `{workflow.design_doc}` is present, indicating a WDS project. Four signals always require Sally's design judgment (signals 3b–6).
 
