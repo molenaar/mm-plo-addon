@@ -24,9 +24,11 @@ Story status moves through: `backlog` → `ready-for-dev` → `in-progress` → 
 
 ## 3. Open three terminals
 
+A **lane** is one pipeline stage a story passes through — dev, review, QA, or (once an epic finishes) retrospective. Each round, the orchestrator dispatches whichever lanes are currently unblocked, across all stories, in the same pass. Note the review *lane* here is related to but distinct from the story-status `review` from step 2: a story's status flips to `review` for the stretch it's sitting in the review lane, but "lane" and "status" are two different tracking axes.
+
 | Terminal | Role | Command |
 |---|---|---|
-| 1 | Amelia (`bmad-agent-dev`) — dispatches dev, review, QA, and retro lanes | `/bmad-agent-dev`, then see step 5 |
+| 1 | Amelia (`bmad-agent-dev`) — dispatches dev, review, QA, and retro lanes | `/bmad-agent-dev`, then `/mm-plo-orchestrator` (see step 5) |
 | 2 | John (`bmad-agent-pm`) — PM-level status checks | `/bmad-agent-pm`, then `/loop 20m /bmad-sprint-status` |
 | 3 (optional) | Sally (`bmad-agent-ux-designer`) — UX fidelity watch, requires `bmad-agent-ux-designer` installed | `/bmad-agent-ux-designer`, then `/loop 40m /mm-ux-orchestrator` |
 
@@ -72,6 +74,8 @@ gantt
     section Story 4
     Dev      :s4d, 2, 2
 ```
+
+*Durations above are illustrative — they show ordering and overlap between stories, not real timing.*
 
 Read this literally: while story 4 is only just starting dev, story 1 has already cleared review and is in QA. If review finds a bug in story 1, that story goes back for a fix while story 2 — already clean — moves on to QA independently. Nothing here waits in line.
 
