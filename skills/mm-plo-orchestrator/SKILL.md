@@ -66,9 +66,11 @@ Build one dispatch bundle per lane with the lane objective, required inputs, dep
 
 - `bmad-agent-dev` for implementation lanes
 - `bmad-code-review` for review lanes
-- `bmad-qa-generate-e2e-tests` for test lanes
+- `bmad-qa-generate-e2e-tests` for test lanes, **only when e2e/automated test infrastructure already exists in the target repo**
 - `bmad-retrospective` for retrospective lanes (pass: epic name, completed story list, round summaries for that epic)
 - `bmad-sprint-status` when the tracker needs to be refreshed
+
+**No test infrastructure yet:** if a story needs a QA lane but the repo has no e2e/automated test infrastructure, do not stand one up mid-round as a side effect of one story's QA pass, and do not silently skip the gate either. Dispatch a **manual verification lane** instead — no upstream skill; derive a short verification checklist from the story's acceptance criteria (or its dev-round evidence, if that's the only spec context available) and either execute it directly (e.g. exercise the endpoint/flow against a local dev stack) or hand it to the user as an explicit next step. Record the result the same way as any other lane (pass/needs-fix/blocked + evidence), and surface the missing test infrastructure itself as a backlog candidate for John/the user to decide on — it is a gap to flag, not a decision this skill makes unilaterally.
 
 Dispatch independent lanes in parallel when dependencies allow. Do not copy core lane logic into this skill; orchestrate it.
 
