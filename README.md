@@ -2,14 +2,13 @@
 
 A [BMad Method](https://github.com/bmad-code-org/BMAD-METHOD) addon, built with [BMad Builder](https://bmad-builder-docs.bmad-method.org/), that adds tracker-first parallel sprint orchestration to a BMad project.
 
-**What it gives you:** two skills. `mm-plo-orchestrator` reads your `sprint-status.yaml` tracker and dispatches dev, review, QA, and retrospective lanes in parallel — stories advance independently instead of one at a time. `mm-ux-orchestrator` runs alongside it as an advisory UX fidelity loop, delegating to Sally (`bmad-agent-ux-designer`) with an optional deterministic scan when a WDS design system is present.
+**What it gives you:** `mm-plo-orchestrator` reads your `sprint-status.yaml` tracker and dispatches dev, review, QA, and retrospective lanes in parallel — stories advance independently instead of one at a time.
 
-**Why use it:** once John has planned epics and stories, this turns execution from "wait for story 1 to finish before starting story 2" into several stories moving through dev → review → QA at once, with John — and optionally a UX reviewer — watching progress in their own loops.
+**Why use it:** once John has planned epics and stories, this turns execution from "wait for story 1 to finish before starting story 2" into several stories moving through dev → review → QA at once, with John watching progress in his own loop.
 
 ## What’s inside
 
-- `skills/mm-plo-orchestrator/` — tracker-first sprint orchestration (Amelia executes stories across parallel lanes)
-- `skills/mm-ux-orchestrator/` — UX orchestration loop (Freya delegates to Sally via `bmad-agent-ux-designer`; WDS deterministic scan activates automatically when DESIGN.md is present)
+- `skills/mm-plo-orchestrator/` — tracker-first sprint orchestration (dispatches `bmad-build-auto` per story across parallel lanes; see [docs/build-integration.md](docs/build-integration.md))
 - `.claude-plugin/marketplace.json` — standalone distribution manifest at repo root
 
 ## Lanes run in parallel, not sequentially
@@ -34,15 +33,15 @@ lanes:
 
 ## Tutorial
 
-New to this addon? [docs/tutorial.md](docs/tutorial.md) walks through installing it and running a full sprint round — three terminals, scoping a round with John, and why stories advance in parallel rather than one at a time.
+New to this addon? [docs/tutorial.md](docs/tutorial.md) walks through installing it and running a full sprint round — two terminals, scoping a round with John, and why stories advance in parallel rather than one at a time.
 
 ## Recommended: BMAD Viewer for VS Code
 
 The **[BMAD Viewer](https://marketplace.visualstudio.com/items?itemName=rdudiver.bmad-viewer-vscode)** is essential for keeping the human in the loop while the orchestrator runs.
 
-- **Kanban dashboard** — reads directly from `sprint-status.yaml` so you see story status updates in real time as Amelia advances lanes
+- **Kanban dashboard** — reads directly from `sprint-status.yaml` so you see story status updates in real time as PLO advances lanes
 - **Round summaries** — search and browse all `.md` files in `_bmad-output` rendered as HTML, including every `round-summary.md` the orchestrator produces
-- **Human gate** — review the kanban after John populates epics and before handing off to Amelia; if the board looks wrong, fix it before setting a `/goal`
+- **Human gate** — review the kanban after John populates epics and before handing off to PLO; if the board looks wrong, fix it before setting a `/goal`
 
 Install it from the VS Code marketplace before running your first sprint.
 
@@ -50,81 +49,34 @@ Install it from the VS Code marketplace before running your first sprint.
 
 Set and forget. Open two Claude Code terminals and the BMAD Viewer, then step back and watch.
 
-**Terminal 1 — Amelia executes the sprint**
+**Terminal 1 — PLO executes the sprint**
 
 After John finishes planning and you've reviewed the kanban:
 
 ```
-/bmad-agent-dev
-/goal ROUND closure line shows done: X/X and retros: X/X with churn: none
 /mm-plo-orchestrator --headless
 ```
 
-Amelia runs parallel rounds — dev, review, QA, and retrospective lanes — until all stories and epics are done. Each round ends with a closure line you and the `/goal` evaluator can both read.
+PLO dispatches `bmad-build-auto` directly per lane (not through Amelia's persona — her menu routes to the interactive `bmad-build`, which would stall waiting for a human that isn't there) and runs parallel rounds — dev, review, QA, and retrospective lanes — continuing round after round by itself until the tracker runs out of eligible lanes, at which point it stops and surfaces why. No `/goal` or external loop needed; the tracker itself is what paces it. Each round ends with a closure line so you can follow progress. See [docs/build-integration.md](docs/build-integration.md) for how this fits together with upstream BMad's own build workflow.
 
-**Terminal 2 — John monitors progress**
+**Terminal 2 — John, on demand**
 
 ```
 /bmad-agent-pm
-/loop 20m /bmad-sprint-status
 ```
 
-John wakes up every 20 minutes, reads the tracker, and gives a PM-level status report. He flags risks, blockers, and whether the sprint is on track — a richer check than the goal evaluator alone.
+No loop — ask John for a status/risk read whenever you want one. The natural moment is right when PLO stops with nothing active (see Terminal 1): that's when there's actually something new for him to weigh in on, not an arbitrary timer.
 
-**Terminal 3 (optional) — Freya orchestrates UX review**
+Real projects typically keep more of the team available the same way — Mary (`bmad-agent-analyst`), Winston (`bmad-agent-architect`), and a UX designer (e.g. `bmad-agent-ux-designer`), each in their own terminal, none looping, all on demand. PLO can also ping any of them directly mid-round when a lane is blocked on something in their lane — see Cross-Session Coordination in `mm-plo-orchestrator`'s `SKILL.md`.
 
-Requires `bmad-agent-ux-designer` (Sally) installed.
-
-```
-/bmad-agent-ux-designer
-/loop 40m /mm-ux-orchestrator
-```
-
-Freya wakes up every 40 minutes and delegates to Sally for design judgment (House integration, missing dossiers, protagonist journey drift, prototype candidates). On WDS projects (DESIGN.md present), she also runs a deterministic scan first (hex drift, missing `@reference`, new pages) and passes the results to Sally. Findings append to `_bmad-output/planning-artifacts/ux-status.md` for review in BMAD Viewer. Pure advisory; never blocks stories from reaching `done`.
-
-**Advanced: John as the goal evaluator — deferred until further notice**
-
-> **This feature is currently not working and has been deferred.** The prompt-based Stop hook causes an endless loop in John's PM terminal — the hook fires inside John's own session, which never terminates cleanly. No solution exists for this yet. The section below is kept for reference only; do not configure this in active projects.
-
-<details>
-<summary>Reference (not for use)</summary>
-
-By default `/goal` uses a small fast model (Haiku) to check the closure line — mechanical pattern matching. For a richer check, wire John as a custom [prompt-based Stop hook](https://code.claude.com/docs/en/hooks-guide#prompt-based-hooks) in your project's `.claude/settings.json`. John evaluates whether acceptance criteria are *genuinely* met, not just technically passing — because he wrote them.
-
-```json
-{
-  "hooks": {
-    "Stop": [{
-      "matcher": "^ROUND \\d+ \\|",
-      "hooks": [{
-        "type": "prompt",
-        "prompt": "<paste workflow.goal_evaluator_prompt from customize.toml>"
-      }]
-    }]
-  }
-}
-```
-
-The `matcher` is critical. `^ROUND \\d+ \\|` matches only the standardized closure line emitted by Stage 5 (`ROUND 3 | done: 4/6 | ...`). Without it the hook fires on every response in every session — including John's PM sessions and any session that reads a round-summary.md file — creating an unintended loop.
-
-With this in place, drop `/goal` from Terminal 1 and just run:
-
-```
-/mm-plo-orchestrator --headless
-```
-
-John wakes up after every round automatically, applies PM-level judgment, and keeps Amelia running until he is satisfied.
-
-</details>
+*(John as a Stop-hook goal evaluator was attempted and deferred — a prompt-based hook caused an endless loop in his own terminal. See `NOTES.md` if you want to pick that idea back up.)*
 
 **You — watch and unblock**
 
-- **BMAD Viewer**: kanban updates as stories advance, round summaries and WDS design findings available in the search panel
-- **Terminal 1**: closure lines show round-by-round progress; `churn: detected` or `churn: rate-limit` means action needed
-- **Terminal 2**: John's 20-minute reports surface anything the automation missed
-- **Terminal 3 (if running)**: Freya's design fidelity findings in `ux-status.md`
+- **BMAD Viewer**: kanban updates as stories advance, round summaries available in the search panel
+- **Terminal 1**: closure lines show round-by-round progress; a stop with nothing active is your cue to check with John; `churn: detected` or `churn: rate-limit` means action needed sooner
 
-Your only job mid-sprint is to unblock what neither Amelia nor John can resolve alone.
+Your only job mid-sprint is to unblock what neither PLO nor John can resolve alone.
 
 ## Install
 

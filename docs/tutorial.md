@@ -1,8 +1,8 @@
 # Tutorial: Running Your First Sprint Round
 
-This walks through installing `mm-plo-addon` and running a real sprint round end to end: three terminals, stories advancing in parallel, and the human decisions in between.
+This walks through installing `mm-plo-addon` and running a real sprint round end to end: PLO and the team's terminals, stories advancing in parallel, and the human decisions in between.
 
-**Who this is for:** you already know BMad Method basics — John (`bmad-agent-pm`), Amelia (`bmad-agent-dev`), Sally (`bmad-agent-ux-designer`), epics and stories. This tutorial covers specifically how the two skills in this addon — `mm-plo-orchestrator` and `mm-ux-orchestrator` — fit into that picture.
+**Who this is for:** you already know BMad Method basics — John (`bmad-agent-pm`), Amelia (`bmad-agent-dev`), epics and stories. This tutorial covers specifically how the skill in this addon — `mm-plo-orchestrator` — fits into that picture.
 
 ## 1. Install
 
@@ -17,24 +17,26 @@ Then run `mm-plo-orchestrator` once and use `setup` or `configure` to register t
 Three things need to exist already — this addon doesn't create them, it consumes them:
 
 1. **Architecture** — a solution design (`bmad-create-architecture`), so Amelia has something to build against.
-2. **UX direction** — either a plain UX spec, or a full WDS design system (`DESIGN.md` + `EXPERIENCE.md`). WDS is optional: `mm-ux-orchestrator` detects `DESIGN.md` automatically and adds a deterministic drift scan on top of Sally's judgment when it's present. Without it, Sally still reviews — just without the extra scan.
+2. **UX direction** — either a plain UX spec, or a full WDS design system (`DESIGN.md` + `EXPERIENCE.md`), whatever your project uses. This addon doesn't dictate a UX process — that's a separate concern from tracker-driven dispatch.
 3. **Epics and stories** — John has run `bmad-create-epics-and-stories` / `bmad-sprint-planning`, producing `_bmad-output/implementation-artifacts/sprint-status.yaml` with every story starting at `backlog`.
 
 Story status moves through: `backlog` → `ready-for-dev` → `in-progress` → `review` → `done`. Epics move through `backlog` → `in-progress` → `done`. This vocabulary matters in the next step — it's how you control what a round picks up.
 
-## 3. Open three terminals
+## 3. Open your terminals
 
 A **lane** is one pipeline stage a story passes through — dev, review, QA, or (once an epic finishes) retrospective. Each round, the orchestrator dispatches whichever lanes are currently unblocked, across all stories, in the same pass. Note the review *lane* here is related to but distinct from the story-status `review` from step 2: a story's status flips to `review` for the stretch it's sitting in the review lane, but "lane" and "status" are two different tracking axes.
 
+Strictly required for running rounds: just PLO. In practice, most projects keep the rest of the team available in their own terminals too, so decisions land immediately instead of waiting for a human to relay them:
+
 | Terminal | Role | Command |
 |---|---|---|
-| 1 | Amelia (`bmad-agent-dev`) — dispatches dev, review, QA, and retro lanes | `/bmad-agent-dev`, then `/mm-plo-orchestrator` (see step 5) |
-| 2 | John (`bmad-agent-pm`) — PM-level status checks | `/bmad-agent-pm`, then `/loop 20m /bmad-sprint-status` |
-| 3 (optional) | Sally (`bmad-agent-ux-designer`) — UX fidelity watch, requires `bmad-agent-ux-designer` installed | `/bmad-agent-ux-designer`, then `/loop 40m /mm-ux-orchestrator` |
+| PLO | Dispatches `bmad-build-auto` directly per lane (no persona to load — bypasses Amelia's menu, which would route to the interactive `bmad-build` instead) | `/mm-plo-orchestrator --headless` (see step 5) |
+| John | PM — scope calls, status checks | `/bmad-agent-pm` |
+| Mary (optional) | Analyst — technical/requirements consultation | `/bmad-agent-analyst` |
+| Winston (optional) | Architect — technical consultation | `/bmad-agent-architect` |
+| Sally (optional) | UX designer — design consultation, drift checks | `/bmad-agent-ux-designer` |
 
-Each terminal starts by loading its persona, then runs its loop or orchestrator command in that persona's context.
-
-Terminal 3 is genuinely optional and orthogonal — its findings are advisory only and never block a round from closing. Freya always delegates final judgment to Sally; she only adds a deterministic scan (hex drift, missing `@reference`, new pages) on top when `DESIGN.md` is present. Findings land in `_bmad-output/planning-artifacts/ux-status.md`, which both John and you can read.
+None of these loop or self-schedule (see the README for why) — load the persona, then talk to it whenever there's something to discuss. PLO can also ping any of them directly mid-round when a lane is blocked on something in their lane — see Cross-Session Coordination in `mm-plo-orchestrator`'s `SKILL.md`.
 
 Install the [BMAD Viewer for VS Code](https://marketplace.visualstudio.com/items?itemName=rdudiver.bmad-viewer-vscode) too — it reads `sprint-status.yaml` as a live kanban and renders round summaries, giving you the human gate this whole setup assumes.
 
@@ -46,15 +48,15 @@ So to run Epic 1's first 4 stories (out of 10) as round 1: have John (or `bmad-c
 
 ## 5. Kick off Round 1
 
-In Terminal 1:
+In PLO's terminal:
 
 ```
-/mm-plo-orchestrator
+/mm-plo-orchestrator --headless
 ```
 
-(or `--headless` for structured JSON output instead of conversation).
+(drop `--headless` for conversational output instead of structured JSON).
 
-This is the part worth internalizing: **a round is not sequential.** The orchestrator reads the tracker, finds every lane that's currently unblocked, and dispatches all of them in the same pass. A story doesn't wait for the story before it — it waits for its own dependencies and its own lane gates.
+This is the part worth internalizing: **a round is not sequential, and it doesn't stop after one.** The orchestrator reads the tracker, finds every lane that's currently unblocked, and dispatches all of them in the same pass — a story doesn't wait for the story before it, it waits for its own dependencies and its own lane gates. Then it closes the round and keeps going, straight into the next one, by itself — no external loop or `/goal` needed. The only thing that pauses it is the tracker running out of eligible lanes (see step 6).
 
 ```mermaid
 gantt
@@ -79,39 +81,27 @@ gantt
 
 Read this literally: while story 4 is only just starting dev, story 1 has already cleared review and is in QA. If review finds a bug in story 1, that story goes back for a fix while story 2 — already clean — moves on to QA independently. Nothing here waits in line.
 
-The lanes the orchestrator dispatches, per story, in order: `bmad-agent-dev` (implementation) → `bmad-code-review` → `bmad-qa-generate-e2e-tests`. A QA gate failure overrides a green implementation lane — a story doesn't reach `done` just because dev finished.
+The lanes the orchestrator dispatches, per story: `bmad-build-auto` implements *and* reviews in one pass (the same adversarial review layers `bmad-code-review` uses, built in) — a separate `bmad-code-review` pass only follows if that run recommends one. `bmad-qa-generate-e2e-tests` runs only when the repo already has e2e/automated test infrastructure; otherwise PLO falls back to a manual verification lane. A QA gate failure overrides a green implementation lane — a story doesn't reach `done` just because dev finished.
 
-## 6. The round closes
+## 6. Each round, and when it stops
 
-Every round ends with one machine-readable line:
+Every round ends with one machine-readable line, and then — unless it's blocked — the next round starts immediately:
 
 ```
 ROUND {N} | done: {X}/{total} | in-progress: {A} | review: {B} | retros: {C}/{epics} | churn: none|detected|rate-limit
 ```
 
-`churn: detected` means the round made no advance and needs your attention; `churn: rate-limit` means it was just an API pause, not a real stall.
+`churn: detected` means the round made no advance and needs your attention; `churn: rate-limit` means it was just an API pause, not a real stall — either way, watch the kanban in BMAD Viewer or `round-summary.md` in the round's workspace folder as it goes.
 
-At this point:
+It keeps going, round after round, until the tracker has nothing left for it: every story under this batch is `ready-for-dev`/active and gets picked up, done, cleared, until none remain (the rest are still at `backlog`, deliberately not promoted yet). At that point it stops and surfaces why — this is your cue, not a failure:
 
-- Check the kanban in BMAD Viewer, or read `round-summary.md` in the round's workspace folder.
-- If something's off, talk to John (Terminal 2 is already surfacing his 20-minute PM read) about what to do next — descope a story, adjust acceptance criteria, whatever it is.
-- When you're satisfied, decide the next batch with John (e.g. promote stories 5–8 to `ready-for-dev`) and run `/mm-plo-orchestrator` again for round 2.
+- Ask John what's next — descope a story, adjust acceptance criteria, whatever it is.
+- Decide the next batch with John (e.g. promote stories 5–8 to `ready-for-dev`) and run `/mm-plo-orchestrator --headless` again.
 
-Repeat this per round until every story under the epic is `done`.
+Repeat until every story under the epic is `done`.
 
 ## 7. Retrospective, then the next epic
 
-Once every story under an epic is `done`, the orchestrator automatically adds a retrospective lane for that epic on the next round (dispatching `bmad-retrospective`) — you don't need to trigger it separately. Once the retrospective completes, the epic itself flips to `done`.
+Once every story under an epic is `done`, the orchestrator automatically adds a retrospective lane for that epic on its next round (dispatching `bmad-retrospective`) — you don't need to trigger it separately. Once the retrospective completes, the epic itself flips to `done`.
 
 Then move to the next epic: John scopes its first batch of stories the same way as step 4, and you're back to step 5.
-
-## Going hands-off (optional)
-
-Everything above is round-by-round, with you deciding when to continue. If you'd rather let it run unattended across the *entire* sprint (not just one round), pair `/goal` with `--headless`:
-
-```
-/goal ROUND closure line shows done: X/X and retros: X/X with churn: none
-/mm-plo-orchestrator --headless
-```
-
-This re-invokes the orchestrator round after round until the whole sprint — every story, every retrospective — is done, checking the closure line automatically after each round. See the README for the full setup and its current limitations.
